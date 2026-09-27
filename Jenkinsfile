@@ -34,16 +34,22 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t banking-app:1.0 -f docker/Dockerfile .'
+            }
+        }
+
     }
 
     post {
 
         success {
-            echo 'Banking application CI build successful'
+            echo 'Banking application CI/CD build successful'
         }
 
         failure {
-            echo 'Banking application CI build failed'
+            echo 'Banking application CI/CD build failed'
         }
 
     }
