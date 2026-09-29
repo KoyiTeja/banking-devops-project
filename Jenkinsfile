@@ -40,16 +40,44 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Tag') {
+            steps {
+                sh 'docker tag banking-app:1.0 tejakoyi/banking-app:1.0'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh 'docker push tejakoyi/banking-app:1.0'
+            }
+        }
+
     }
 
     post {
 
         success {
-            echo 'Banking application CI/CD build successful'
+            echo 'Banking application CI/CD build and Docker push successful'
         }
 
         failure {
-            echo 'Banking application CI/CD build failed'
+            echo 'Banking application CI/CD build or Docker push failed'
         }
 
     }
